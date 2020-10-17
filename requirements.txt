@@ -1,7 +1,40 @@
+absl-py==0.10.0
+astor==0.8.1
+certifi==2018.8.24
+cloudpickle @ file:///home/conda/feedstock_root/build_artifacts/cloudpickle_1598400192773/work
+cycler==0.10.0
+dask==2.6.0
+decorator==4.4.2
+gast @ file:///tmp/build/80754af9/gast_1597433534803/work
+grpcio==1.32.0
+h5py==2.10.0
+imageio @ file:///home/conda/feedstock_root/build_artifacts/imageio_1594044661732/work
+importlib-metadata==2.0.0
 Keras==2.2.4
-matplotlib==3.0.2
-scikit-image==0.14.1
-scikit-learn==0.20.1
-scipy==1.1.0
-tqdm==4.28.1
-opencv-python==4.1.0.25
+Keras-Applications==1.0.8
+Keras-Preprocessing==1.1.2
+kiwisolver==1.0.1
+Markdown==3.2.2
+matplotlib==2.2.2
+networkx==2.4
+numpy==1.18.5
+olefile==0.46
+Pillow==5.2.0
+protobuf==3.13.0
+pyparsing==2.4.7
+python-dateutil==2.8.1
+pytz==2020.1
+PyWavelets==1.0.1
+PyYAML==5.3.1
+scikit-image==0.14.0
+scikit-learn==0.20.0
+scipy==1.4.1
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
+tensorboard==1.11.0
+tensorflow==1.11.0
+tensorflow-gpu==1.11.0
+termcolor==1.1.0
+toolz @ file:///home/conda/feedstock_root/build_artifacts/toolz_1600973991856/work
+tornado==5.1.1
+Werkzeug==1.0.1
+zipp==1.2.0
