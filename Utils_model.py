@@ -6,29 +6,28 @@
 #usage           :imported in other files
 #python_version  :3.5.4
 
-from keras.applications.vgg19 import VGG19
-import keras.backend as K
-from keras.models import Model
-from keras.optimizers import Adam
+from tensorflow.keras.applications import VGG19
+import tensorflow.keras.backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 
 class VGG_LOSS(object):
 
     def __init__(self, image_shape):
         
         self.image_shape = image_shape
-
-    # computes VGG loss or content loss
-    def vgg_loss(self, y_true, y_pred):
-    
         vgg19 = VGG19(include_top=False, weights='imagenet', input_shape=self.image_shape)
         vgg19.trainable = False
         # Make trainable as False
         for l in vgg19.layers:
             l.trainable = False
-        model = Model(inputs=vgg19.input, outputs=vgg19.get_layer('block5_conv4').output)
-        model.trainable = False
+        self.model = Model(inputs=vgg19.input, outputs=vgg19.get_layer('block5_conv4').output)
+        self.model.trainable = False
+
+    # computes VGG loss or content loss
+    def vgg_loss(self, y_true, y_pred):
     
-        return K.mean(K.square(model(y_true) - model(y_pred)))
+        return K.mean(K.square(self.model(y_true) - self.model(y_pred)))
     
 def get_optimizer():
  
