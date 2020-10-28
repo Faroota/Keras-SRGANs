@@ -10,8 +10,8 @@ from Network import Generator, Discriminator
 import Utils_model, Utils
 from Utils_model import VGG_LOSS
 
-from keras.models import Model
-from keras.layers import Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input
 from tqdm import tqdm
 import numpy as np
 import os
