@@ -13,6 +13,15 @@ import numpy as np
 from numpy import array
 from numpy.random import randint
 # from scipy.misc import imresize # duplicated since scipy 1.3
+from extraction import extract_patches # added by Furat
+from patching_utils import overlap_patching
+from sklearn.feature_extraction.image import extract_patches_2d as extract_2d
+#from config_keras import general_configuration as gen_conf
+#from config_keras import training_configuration as train_test_conf
+from config_keras import general_configuration as gen_conf
+from config_keras import training_configuration as train_conf
+from config_keras import test_configuration as test_conf
+
 from PIL import Image
 import os
 import sys
@@ -22,11 +31,12 @@ import matplotlib.pyplot as plt
 
 plt.switch_backend('agg')
 
-
 # Subpixel Conv will upsample from (h, w, c) to (h/r, w/r, c/r^2)
+# change to 1D --> upsample from h w to h/r w/r
 def SubpixelConv2D(input_shape, scale=4):
     def subpixel_shape(input_shape):
-        dims = [input_shape[0], input_shape[1] * scale, input_shape[2] * scale, int(input_shape[3] / (scale ** 2))]
+        dims = [input_shape[0], input_shape[1] * scale, input_shape[2] * scale, int(input_shape[3] / (scale ** 2))] #commented by Furat
+        #dims = [input_shape[0], input_shape[1] * scale, input_shape[2] * scale] # changed by Furat
         output_shape = tuple(dims)
         return output_shape
 
@@ -38,8 +48,15 @@ def SubpixelConv2D(input_shape, scale=4):
 
 # Takes list of images and provide HR images in form of numpy array
 def hr_images(images):
+    #images_hr = np.array(images, dtype="object")
     images_hr = array(images)
+    print (images_hr.shape)
+    #images_hr = np.int(images)
+    #images_hr, this_lr_patch = overlap_patching(gen_conf, train_conf, images)
+    images_hr = extract_2d (images_hr, (32,32))
+    print (images_hr.shape)
     return images_hr
+
 
 
 # Takes list of images and provide LR images in form of numpy array
@@ -50,18 +67,22 @@ def lr_images(images_real, downscale):
         # images.append(imresize(images_real[img], [images_real[img].shape[0] // downscale, images_real[img].shape[1] // downscale], interp='bicubic', mode=None))
         images.append(np.array(Image.fromarray(images_real[img]).resize((images_real[img].shape[0] // downscale, images_real[img].shape[1] // downscale), resample=Image.BICUBIC)))
     images_lr = array(images)
+    #images_lr, this_lr_patch = overlap_patching(gen_conf, train_conf, images_real)
+    #images_lr = extract_2d(images_lr, (32,32))
     return images_lr
 
 
 #  normalize images to range [-1, 1]
 def normalize(input_data):
     return (input_data.astype(np.float32) - 127.5) / 127.5
+    #input_data = (input_data -127.5)/127.5
+    #return input_data
 
 
 def denormalize(input_data):
     input_data = (input_data + 1) * 127.5
     return input_data.astype(np.uint8)
-
+    #return input_data
 
 def load_path(path):
     directories = []
@@ -74,24 +95,26 @@ def load_path(path):
     return directories
 
 
-def load_data_from_dirs(dirs, ext, image_shape):
+def load_data_from_dirs(dirs, ext, image_shape): #change to loading grayscale images
     files = []
     file_names = []
     count = 0
     (width, height, n) = image_shape
+    #(width, height) = image_shape #changed to grayscale by Furat
     for d in dirs:
         for f in os.listdir(d):
             if f.endswith(ext):
                 # image = data.imread(os.path.join(d, f)) #duplicated
                 image = io.imread(os.path.join(d,f))
-                if len(image.shape) > 2:
-                    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
-                    files.append(image)
-                    file_names.append(os.path.join(d, f))
-                else:
-                    file_name = os.path.join(d, f)
-                    print('Image', file_name, 'is not 3 dimension')
+                if len(image.shape) > 2: #commented by Furat
+                    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA) #commented by Furat
+                files.append(image) # index was changed
+                file_names.append(os.path.join(d, f)) #index was changed
+                #else: #commented by Furat
+                #    file_name = os.path.join(d, f) #commented by Furat
+                 #   print('Image', file_name, 'is not 3 dimension') #commented by Furat
                 count = count + 1
+    
     return files
 
 
@@ -100,7 +123,7 @@ def load_data(directory, ext):
     return files
 
 
-def load_training_data(directory, ext, image_shape, number_of_images=1000, train_test_ratio=0.8):
+def load_training_data(directory, ext, image_shape, number_of_images=300, train_test_ratio=0.8): #was 1000
     print("========= Start loading data ==========")
     number_of_train_images = int(number_of_images * train_test_ratio)
 
@@ -115,14 +138,19 @@ def load_training_data(directory, ext, image_shape, number_of_images=1000, train
         print("Please reduce number of images to %d" % len(files))
         sys.exit()
 
-    test_array = array(files)
-    if len(test_array.shape) < 3:
-        print("Images are of not same shape")
-        print("Please provide same shape images")
-        sys.exit()
+    #test_array = array(files)
+    #test_array = np.array(files,dtype="object")
+    #test_array = np.matrix(files)
+    #if len(test_array.shape) < 3: # commented by Furat
+        #files= tf.image.rgb_to_grayscale()
+    #    print("Images are of not same shape") # commented by Furat
+        #print("Please provide same shape images") # commented by Furat
+    #    sys.exit()
+
 
     x_train = files[:number_of_train_images]
     x_test = files[number_of_train_images:number_of_images]
+    
 
     # Re-scale image to x4 of image shape was defined
 
@@ -143,7 +171,7 @@ def load_training_data(directory, ext, image_shape, number_of_images=1000, train
     return x_train_lr, x_train_hr, x_test_lr, x_test_hr
 
 
-def load_test_data_for_model(directory, ext, image_shape, number_of_images=100):
+def load_test_data_for_model(directory, ext, image_shape, number_of_images=30):
     files = load_data_from_dirs(load_path(directory), ext, image_shape)
 
     print("Load image from ", directory, "successfully")
@@ -165,7 +193,7 @@ def load_test_data_for_model(directory, ext, image_shape, number_of_images=100):
     return x_test_lr, x_test_hr
 
 
-def load_test_data(directory, ext, number_of_images=100):
+def load_test_data(directory, ext, number_of_images=30):
     files = load_data_from_dirs(load_path(directory), ext)
 
     if len(files) < number_of_images:
