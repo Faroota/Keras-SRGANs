@@ -7,16 +7,20 @@
 #python_version  :3.5.4
 
 from tensorflow.keras.applications import VGG19
+from tensorflow.keras.applications import VGG16
 import tensorflow.keras.backend as K
 from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Concatenate
 from tensorflow.keras.optimizers import Adam
+#tf.compat.v1.disable_eager_execution()
 
 class VGG_LOSS(object):
 
     def __init__(self, image_shape):
         
         self.image_shape = image_shape
-        vgg19 = VGG19(include_top=False, weights='imagenet', input_shape=self.image_shape)
+        #self.image_shape= Concatenate()([image_shape,image_shape,image_shape])
+        vgg19 = VGG19(include_top=False, weights='imagenet', input_shape=self.image_shape) # was VGG19
         vgg19.trainable = False
         # Make trainable as False
         for l in vgg19.layers:
