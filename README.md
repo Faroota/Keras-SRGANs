@@ -5,8 +5,17 @@ For more about topic check [Single Image Super Resolution Using GANs — Ker
 
 ## Problem Statement:
     Enhancing low resolution images by applying deep network with adversarial network (Generative Adversarial Networks) 
-    to produce high resolutions images.
+    to produce high resolutions "Ultrasound" images.
     
+## Ultrasound Results:
+From left right, LR, output, GT
+![test_generated_image_59](https://user-images.githubusercontent.com/10120088/114328849-82d5d580-9b46-11eb-9129-7b785a091819.png)
+![test_generated_image_58](https://user-images.githubusercontent.com/10120088/114328855-88332000-9b46-11eb-9d60-5d3e51b0a084.png)
+![test_generated_image_36](https://user-images.githubusercontent.com/10120088/114328865-9123f180-9b46-11eb-8bf9-5d66fac9439d.png)
+
+ 
+ 
+
 ## Architecture:
     
 ![Basic Architecture](./Architecture_images/architecture.jpg)
